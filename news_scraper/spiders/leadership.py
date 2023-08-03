@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 import scrapy
 from scrapy.selector import Selector
+from scrapy.loader import ItemLoader
 
 from news_scraper.utils import *
-from datetime import timedelta
+from news_scraper.items import NewsScraperItem
 
 
 class LeadershipSpider(scrapy.Spider):
@@ -39,6 +42,8 @@ class LeadershipSpider(scrapy.Spider):
             '//article[contains(@class, "jeg_post jeg_pl_lg_2 format")]')
 
         for article in articles:
+            l = ItemLoader(item=NewsScraperItem(), selector=article)
+
             date = article.xpath(
                 './/div[@class="jeg_meta_date"]/a/text()').get().strip()
             dt_date = self.to_datetime(date)
@@ -48,16 +53,17 @@ class LeadershipSpider(scrapy.Spider):
             else:
                 date_iso = dt_date.date().isoformat()
 
-            data = {
-                "title": article.xpath('.//h3[@class="jeg_post_title"]/a/text()').get().strip(),
-                "link": article.xpath('.//h3[@class="jeg_post_title"]/a/@href').get().strip(),
-                "preview": article.xpath('.//div[@class="jeg_post_excerpt"]/p/text()').get().strip(),
-                "date": date_iso,
-                "photo_link": str(article.xpath('./div[@class="jeg_thumb"]/a//img/@data-src').get()).strip(),
-                "outlet": "leadershipng",
-            }
+            l.add_xpath(
+                "title", './/h3[@class="jeg_post_title"]/a')
+            l.add_xpath("link", './/h3[@class="jeg_post_title"]/a/@href')
+            l.add_xpath(
+                "preview", './/div[@class="jeg_post_excerpt"]/p')
+            l.add_value("date", date_iso)
+            l.add_xpath(
+                "photo_link", './div[@class="jeg_thumb"]/a//img/@data-src')
+            l.add_value("outlet", 'leadershipng')
 
-            yield data
+            yield l.load_item()
 
     def to_datetime(self, date):
         dsplit = date.split()

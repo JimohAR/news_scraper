@@ -10,4 +10,7 @@ from itemadapter import ItemAdapter
 
 class NewsScraperPipeline:
     def process_item(self, item, spider):
+        for field in item.fields:
+            item.setdefault(field, None)
+
         return item
