@@ -4,11 +4,11 @@ import scrapy
 from scrapy.selector import Selector
 from scrapy.loader import ItemLoader
 
-from news_scraper.utils import *
 from news_scraper.items import NewsScraperItem
+from news_scraper.spiders.base import *
 
 
-class LeadershipSpider(scrapy.Spider):
+class LeadershipSpider(BaseSpider):
     name = "leadership"
     allowed_domains = ["leadership.ng"]
 
@@ -31,7 +31,7 @@ class LeadershipSpider(scrapy.Spider):
         yield scrapy.Request(url=url, method="POST", headers=headers, body=payload)
 
     def parse(self, response):
-        end_date = dt.today() - timedelta(days=2)
+        end_date = self.end_date
 
         json_response = response.json()
         body = " ".join(json_response["content"].split())

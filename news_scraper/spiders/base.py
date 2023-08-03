@@ -35,9 +35,18 @@
 # dayth.update(zip(list(range(24, 31)), ["th"] * (31-24)))
 
 
-# class PunchSpider(scrapy.Spider):
-#     def __init__(self, days=2, name=None, **kwargs):
-#         super().__init__(name, **kwargs)
+from datetime import datetime as dt
+from datetime import timedelta
 
-#         end_date = dt.today() - timedelta(days=days)
-#         self.end_date_str = to_datestr(end_date)
+import scrapy
+from scrapy.selector import Selector
+from scrapy.loader import ItemLoader
+
+from news_scraper.items import NewsScraperItem
+
+
+class BaseSpider(scrapy.Spider):
+    def __init__(self, days=2, name=None, **kwargs):
+        super().__init__(name, **kwargs)
+
+        self.end_date = dt.today() - timedelta(days=days)

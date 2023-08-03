@@ -4,16 +4,17 @@ import scrapy
 from scrapy.loader import ItemLoader
 
 from news_scraper.utils import *
+from news_scraper.spiders.base import *
 from news_scraper.items import NewsScraperItem
 
 
-class PunchSpider(scrapy.Spider):
+class PunchSpider(BaseSpider):
     name = "punch"
     allowed_domains = ["punchng.com"]
     start_urls = ["https://punchng.com/topics/news/"]
 
     def parse(self, response):
-        end_date = dt.today() - timedelta(days=2)
+        end_date = self.end_date
 
         articles1 = response.xpath(
             '//div[@class="latest-news-timeline-section"]/article')
