@@ -51,7 +51,7 @@ class SQLitePipeline:
         # insert news post into database
         i = ItemAdapter(item).asdict()
 
-        # (title, link, preview, date, photo_link, date)
+        # (title, link, preview, date, photo_link, outlet)
         data = (i.get("title"), i.get("link"), i.get("preview"),
                 i.get("date"), i.get("photo_link"), i.get("outlet"))
 
