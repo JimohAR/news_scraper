@@ -1,15 +1,31 @@
+import os
 from datetime import timedelta
 from datetime import datetime as dt
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 import psycopg2
 from psycopg2 import OperationalError as Error
 
 from queries import get_news
-from news_scraper.settings import POSTGRESQL_URI
+from dotenv import load_dotenv
+
+load_dotenv()
+POSTGRESQL_URI = os.getenv("POSTGRESQL_URI")
 
 app = FastAPI()
+
+origins = ["https://5173-imamabubakar-newstrove-4g8h4jrg93v.ws-eu102.gitpod.io",
+           "https://news-trove.vercel.app"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/", tags=["ROOT"])

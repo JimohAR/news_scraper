@@ -18,7 +18,7 @@ micros:
   - name: news-scraper
     src: ./
     engine: python3.9
-    run: echo `ls -a` && sh ./run_spiders.sh
+    run: sh ./run_spiders.sh
     actions:
       - id: "run_spiders"
         name: "Run Spiders"
