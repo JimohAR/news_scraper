@@ -79,6 +79,8 @@ class LeadershipSpider(BaseSpider):
             period_dict = {"hours": freq}
         elif period in "days":
             period_dict = {"days": freq}
+        elif period in "weeks":
+            period_dict = {"days": freq * 7}
 
         new_date = dt.today() - timedelta(**period_dict)
 
