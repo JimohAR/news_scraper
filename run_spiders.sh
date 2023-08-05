@@ -1,5 +1,5 @@
 # run inside active project ./
-. .venv/bin/activate
+# . .venv/bin/activate
 python make_db.py
 
 scrapy crawl punch -O data/punch.json

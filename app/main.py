@@ -1,35 +1,36 @@
 from datetime import timedelta
 from datetime import datetime as dt
 
-import sqlite3
-from sqlite3 import Error
 from fastapi import FastAPI
 
+import psycopg2
+from psycopg2 import OperationalError as Error
+
 from queries import get_news
-from news_scraper.settings import SQLITE_URI
+from news_scraper.settings import POSTGRESQL_URI
 
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/", tags=["ROOT"])
 def read_root():
     return {"App": "Up and Running"}
 
 
-@app.get("/news")
+@app.get("/news", tags=["NEWS"])
 def read_item(days_back: int = 1) -> dict:
     end_date = make_end_date(days_back)
 
     news_list = []
     try:
-        connection = sqlite3.connect(SQLITE_URI)
-        cursor = connection.cursor()
-        news_list = cursor.execute(get_news, [end_date]).fetchall()
-        connection.commit()
+        connection = psycopg2.connect(POSTGRESQL_URI)
     except Error as e:
         print(f"The error '{e}' occurred")
-    finally:
-        connection.close()
+        return {}
+
+    cursor = connection.cursor()
+    cursor.execute(get_news, [end_date])
+    news_list = cursor.fetchall()
 
     new_l = []
     for news in news_list:

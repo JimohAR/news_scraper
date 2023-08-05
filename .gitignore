@@ -165,3 +165,5 @@ temp.*
 .vscode/
 data/
 *.sqlite
+
+.space

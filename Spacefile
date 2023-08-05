@@ -1,0 +1,32 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+micros:
+  - name: api
+    src: ./
+    engine: python3.9
+    primary: true
+    run: uvicorn app.main:app
+    dev: uvicorn app.main:app --reload
+    public_routes:
+      - "/*"
+    presets:
+      env:
+        - name: POSTGRESQL_URI
+          description: PostgreSQL URI
+          default: ""
+
+  - name: news-scraper
+    src: ./
+    engine: python3.9
+    run: echo `ls -a` && sh ./run_spiders.sh
+    actions:
+      - id: "run_spiders"
+        name: "Run Spiders"
+        description: "Runs the spiders to get latest news and persists it to database"
+        trigger: "schedule"
+        default_interval: "* 0/1 * * *" 
+    presets:
+      env:
+        - name: POSTGRESQL_URI
+          description: PostgreSQL URI
+          default: ""

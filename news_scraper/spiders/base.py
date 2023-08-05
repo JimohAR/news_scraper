@@ -46,7 +46,7 @@ from news_scraper.items import NewsScraperItem
 
 
 class BaseSpider(scrapy.Spider):
-    def __init__(self, days=2, name=None, **kwargs):
+    def __init__(self, days=1, name=None, **kwargs):
         super().__init__(name, **kwargs)
 
         self.end_date = dt.today() - timedelta(days=days)

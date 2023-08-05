@@ -12,6 +12,9 @@ from itemadapter import ItemAdapter
 import sqlite3
 # from sqlite3 import Error
 
+import psycopg2
+from psycopg2 import OperationalError as Error
+
 from queries import insert_news, remove_duplicates
 
 
@@ -59,6 +62,41 @@ class SQLitePipeline:
         self.conn.commit()
         return item
 
+
+class PostgresqlPipeline:
+    collection_name = "scrapy_items"
+
+    def __init__(self, uri):
+        self.sqlite_uri = uri
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            uri=crawler.settings.get("POSTGRESQL_URI"),
+        )
+
+    def open_spider(self, spider):
+        self.conn = psycopg2.connect(self.sqlite_uri)
+        self.conn.autocommit = True
+        self.cursor = self.conn.cursor()
+
+    def close_spider(self, spider):
+        # remove duplicates
+        self.cursor.execute(remove_duplicates)
+
+        # close spider
+        self.conn.close()
+
+    def process_item(self, item, spider):
+        # insert news post into database
+        i = ItemAdapter(item).asdict()
+
+        # (title, link, preview, date, photo_link, outlet)
+        data = (i.get("title"), i.get("link"), i.get("preview"),
+                i.get("date"), i.get("photo_link"), i.get("outlet"))
+
+        self.cursor.execute(insert_news, data)
+        return item
 
 # TODO: Implement a better duplicate filter:
 #   load the last n days of data from database

@@ -7,6 +7,12 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import os
+from dotenv import dotenv_values
+
+from dotenv import load_dotenv
+
+load_dotenv()
+uri = os.getenv("POSTGRESQL_URI")
 
 BOT_NAME = "news_scraper"
 
@@ -14,6 +20,7 @@ SPIDER_MODULES = ["news_scraper.spiders"]
 NEWSPIDER_MODULE = "news_scraper.spiders"
 
 SQLITE_URI = os.path.join(os.path.dirname(__file__), "../news_db.sqlite")
+POSTGRESQL_URI = uri
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "news_scraper (+http://www.yourdomain.com)"
@@ -66,8 +73,8 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "news_scraper.pipelines.NewsScraperPipeline": 300,
-
-    "news_scraper.pipelines.SQLitePipeline": 400,
+    # "news_scraper.pipelines.SQLitePipeline": 400,
+    "news_scraper.pipelines.PostgresqlPipeline": 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
