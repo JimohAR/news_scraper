@@ -19,17 +19,22 @@ VALUES
 """
 
 remove_duplicates = """
-DELETE FROM news a USING (
-    SELECT MIN(ctid) as ctid, link
-    FROM news 
-    GROUP BY link HAVING COUNT(*) > 1
-) b
-WHERE a.link = b.link 
-AND a.ctid <> b.ctid
+DELETE  FROM
+    news a
+        USING (
+        SELECT MIN(id) as min_id, link
+        FROM news
+        GROUP BY link
+        HAVING COUNT(link) > 1
+        ) b
+WHERE
+    a.id > b.min_id
+    AND a.link = b.link;
 """
 
 get_news = """
 SELECT title, link, preview, date_posted, photo_link, outlet
 FROM news
 WHERE date_posted >= %s::DATE
+ORDER BY id DESC
 """
